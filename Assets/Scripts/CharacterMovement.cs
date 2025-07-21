@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class CharacterMovement : MonoBehaviour
 {
+    //che kc check
+    
     // Start is called before the first frame update
     void Start()
     {
