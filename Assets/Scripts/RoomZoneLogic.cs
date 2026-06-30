@@ -8,6 +8,10 @@ public class RoomZoneLogic : MonoBehaviour
     Vector3 maxBound;
     Vector3 minBound;
 
+    public string RoomType;
+    public  List<string> Facilities;
+    public List<GameObject> Entrances;
+
     private void Awake()
     {
         meshCollider = GetComponent<MeshCollider>();
