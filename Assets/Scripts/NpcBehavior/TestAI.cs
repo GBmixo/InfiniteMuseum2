@@ -8,12 +8,15 @@ public class TestAI : MonoBehaviour
     public NavMeshAgent agent;
     public Vector3 testOffset;
 
-    public List<GameObject> roomZones;
+    public List<GameObject> knownRoomZones;
     public Dictionary<string, string> timeTable = new Dictionary<string, string>
     {
-        {"1:00 AM", "Morning Routine"}, {"2:00 AM", "Food"},
-        {"3:00 AM", "Morning Routine"}, {"4:00 AM", "Food"},
-        {"5:00 AM", "Morning Routine"}, {"6:00 AM", "Food"}
+        {"1:00 AM", "Sleep"},
+        {"5:00 AM", "Wake Up"},
+        {"6:00 AM", "Food"},
+        {"7:00 AM", "Sleep"},
+        {"8:00 AM", "Food"},
+        {"6:00 PM", "Food"}
     };
 
     // Start is called before the first frame update
@@ -33,7 +36,7 @@ public class TestAI : MonoBehaviour
         {
             amOrPm = "PM";
         }
-        string currentMinWithLeadingZero = "???";
+        string currentMinWithLeadingZero;
         if(currentMinute < 10)
         {
             currentMinWithLeadingZero = $"0{currentMinute}";
@@ -60,20 +63,37 @@ public class TestAI : MonoBehaviour
     {
         GameObject targetRoom = null;
         bool roomTargeted = false;
-        if(currentScheduledEvent == "Morning Routine")
+        bool alternateBehavior = false;
+        //Vector3 lastPosition;
+        if(currentScheduledEvent == "Sleep")
         {
-            targetRoom = roomZones.Find(obj => obj.name == "Bedroom1");
-            roomTargeted = true;
+            targetRoom = FindRoom("Bedroom1");
+            RoomZoneLogic roomLogic = targetRoom.GetComponent<RoomZoneLogic>();
+            GameObject targetBed = roomLogic.facilities.Find(obj => obj.name == "Bed01");
+            Vector3 targetStand =  targetBed.transform.GetChild(0).transform.position;
+            MoveToCoords(targetStand);
+            
         }
         else if(currentScheduledEvent == "Food")
         {
-            targetRoom = roomZones.Find(obj => obj.name == "Kitchen1");
+            targetRoom = FindRoom("Kitchen1");
             roomTargeted = true;
         }
-        if(roomTargeted == true)
+        else if(currentScheduledEvent == "MorningRoutine")
+        {
+            targetRoom = FindRoom("Bedroom1");
+        }
+
+        if(roomTargeted == true && alternateBehavior == false)
         {
             MoveToCoords(targetRoom.GetComponent<RoomZoneLogic>().GetRandomPoint());
         }
+    }
+
+    GameObject FindRoom(string roomName)
+    {
+        GameObject room = knownRoomZones.Find(obj => obj.name == roomName);
+        return room;
     }
 
     void MoveToCoords(Vector3 targetDestination)

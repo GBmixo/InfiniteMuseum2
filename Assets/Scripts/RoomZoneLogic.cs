@@ -9,9 +9,9 @@ public class RoomZoneLogic : MonoBehaviour
     Vector3 minBound;
 
     //ROOM TYPES: Bathroom, Bedroom, Recreation, Hallway, Other
-    public string RoomType;
-    public  List<string> Facilities;
-    public List<GameObject> Entrances;
+    public string roomType;
+    public  List<GameObject> facilities;
+    public List<GameObject> entrances;
 
     private void Awake()
     {
