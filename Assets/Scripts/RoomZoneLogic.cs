@@ -8,16 +8,17 @@ public class RoomZoneLogic : MonoBehaviour
     Vector3 maxBound;
     Vector3 minBound;
 
-    public string RoomType;
-    public  List<string> Facilities;
-    public List<GameObject> Entrances;
+    //ROOM TYPES: Bathroom, Bedroom, Recreation, Hallway, Other
+    public string roomType;
+    public  List<GameObject> facilities;
+    public List<GameObject> entrances;
 
     private void Awake()
     {
         meshCollider = GetComponent<MeshCollider>();
         minBound = meshCollider.bounds.min;
         maxBound = meshCollider.bounds.max;
-        Debug.Log($"random point is {GetRandomPoint()}");
+        Debug.Log($"random point is {meshCollider}");
     }
 
     public Vector3 GetRandomPoint()
