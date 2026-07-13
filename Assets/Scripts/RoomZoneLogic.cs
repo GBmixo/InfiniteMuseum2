@@ -18,7 +18,6 @@ public class RoomZoneLogic : MonoBehaviour
         meshCollider = GetComponent<MeshCollider>();
         minBound = meshCollider.bounds.min;
         maxBound = meshCollider.bounds.max;
-        Debug.Log($"random point is {meshCollider}");
     }
 
     public Vector3 GetRandomPoint()
