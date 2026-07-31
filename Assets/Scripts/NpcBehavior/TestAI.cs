@@ -108,6 +108,8 @@ public class TestAI : MonoBehaviour
     {
         //agent.destination = testDestination.position;
         agent.Move(testOffset);
+
+        //Logic for actions that need to happen at a specific coordinate location
         if(preparingForActionAtSpot && transform.position == targetSpotForAction)
         {
             Debug.Log($"Should perform action now");
