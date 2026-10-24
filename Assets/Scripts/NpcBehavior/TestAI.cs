@@ -4,9 +4,10 @@ using UnityEngine;
 using UnityEngine.AI;
 public class TestAI : MonoBehaviour
 {
-    public Transform testDestination;
     public NavMeshAgent agent;
     public Vector3 testOffset;
+    Vector3 targetSpotForAction;
+    bool preparingForActionAtSpot = false;
 
     public List<GameObject> knownRoomZones;
     public Dictionary<string, string> timeTable = new Dictionary<string, string>
@@ -71,6 +72,7 @@ public class TestAI : MonoBehaviour
             RoomZoneLogic roomLogic = targetRoom.GetComponent<RoomZoneLogic>();
             GameObject targetBed = roomLogic.facilities.Find(obj => obj.name == "Bed01");
             Vector3 targetStand =  targetBed.transform.GetChild(0).transform.position;
+            targetSpotForAction = targetStand;
             MoveToCoords(targetStand);
             
         }
@@ -106,6 +108,10 @@ public class TestAI : MonoBehaviour
     {
         //agent.destination = testDestination.position;
         agent.Move(testOffset);
+        if(preparingForActionAtSpot && transform.position == targetSpotForAction)
+        {
+            Debug.Log($"Should perform action now");
+        }
     }
 
     private void OnEnable()
