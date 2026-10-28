@@ -7,22 +7,40 @@ public class NpcAnimationHandler : MonoBehaviour
     public Animator npcAnimator;
     void Awake()
     {
-        npcAnimator = transform.GetComponent<Animator>();
+        npcAnimator = transform.GetChild(0).GetComponent<Animator>();
     }
 
-    void MovementAnimationChange(string movementType)
+    void AnimationChange(string animType)
     {
-        if(movementType == "idle")
+        if(animType == "Idle")
         {
-            //npcAnimator.SetBool;
+            npcAnimator.SetBool("IsWalking", false);
+            npcAnimator.SetBool("IsRunning", false);
         }
-        else if(movementType == "walk")
+        else if(animType == "Walk")
         {
-            
+            npcAnimator.SetBool("IsWalking", true);
         }
-        else if(movementType == "run")
+        else if(animType == "Run")
         {
-            
+            npcAnimator.SetBool("IsRunning", true);
         }
+        else if(animType == "GoToBed")
+        {
+            npcAnimator.SetTrigger("GoToSleep");
+        }
+        else if(animType == "WakeUp")
+        {
+            Debug.Log("waking up");
+            npcAnimator.SetTrigger("WakeUp");
+        }
+    }
+    void OnEnable()
+    {
+        TestAI.triggerAnimation += AnimationChange;
+    }
+    void OnDisable()
+    {
+        TestAI.triggerAnimation -= AnimationChange;
     }
 }

@@ -14,21 +14,21 @@ public class GroundDetector : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("collider detected " + other.gameObject.name);
+        //Debug.Log("collider detected " + other.gameObject.name);
         if(other.gameObject.layer == 6)
         {
             collidingWith.Add(other.gameObject);
-            Debug.Log(collidingWith.Count);
+            //Debug.Log(collidingWith.Count);
             CheckGround();
         }
     }
     private void OnTriggerExit(Collider other)
     {
-        Debug.Log("collider no longer detected " + other.gameObject.name);
+        //Debug.Log("collider no longer detected " + other.gameObject.name);
         if (other.gameObject.layer == 6)
         {
             collidingWith.Remove(other.gameObject);
-            Debug.Log(collidingWith.Count);
+            //Debug.Log(collidingWith.Count);
             CheckGround();
         }
     }
@@ -37,12 +37,12 @@ public class GroundDetector : MonoBehaviour
     {
         if(collidingWith.Count > 0)
         {
-            Debug.Log("you're grounded now");
+            //Debug.Log("you're grounded now");
             playerController.isGrounded = true;
         }
         else
         {
-            Debug.Log("you're no longer grounded");
+            //Debug.Log("you're no longer grounded");
             playerController.isGrounded = false;
         }
     }

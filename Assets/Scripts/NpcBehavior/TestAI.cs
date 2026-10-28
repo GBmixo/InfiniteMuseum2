@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,28 +8,31 @@ public class TestAI : MonoBehaviour
     public NavMeshAgent agent;
     public Vector3 testOffset;
     Vector3 targetSpotForAction;
-    bool preparingForActionAtSpot = false;
+    string preparingForActionAtSpot = null;
 
     public List<GameObject> knownRoomZones;
     public Dictionary<string, string> timeTable = new Dictionary<string, string>
     {
-        {"1:00 AM", "Sleep"},
-        {"5:00 AM", "Wake Up"},
-        {"6:00 AM", "Food"},
-        {"7:00 AM", "Sleep"},
-        {"8:00 AM", "Food"},
-        {"6:00 PM", "Food"}
+        {"0:03 AM", "Sleep"},
+        {"2:00 AM", "WakeUp"},
+        {"3:00 AM", "Food"},
+        {"4:00 AM", "Sleep"},
+        {"5:00 AM", "Food"},
+        {"6:00 PM", "Sleep"}
     };
 
+    public delegate void TriggerAnimationDelegate(string animationToTrigger);
+    public static TriggerAnimationDelegate triggerAnimation;
+
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
     }
 
     string ParseTimeInfo(bool isDay, int currentHour, int currentMinute)
     {
-        string amOrPm = "???";
+        string amOrPm;
         if(isDay)
         {
             amOrPm = "AM";
@@ -68,12 +72,7 @@ public class TestAI : MonoBehaviour
         //Vector3 lastPosition;
         if(currentScheduledEvent == "Sleep")
         {
-            targetRoom = FindRoom("Bedroom1");
-            RoomZoneLogic roomLogic = targetRoom.GetComponent<RoomZoneLogic>();
-            GameObject targetBed = roomLogic.facilities.Find(obj => obj.name == "Bed01");
-            Vector3 targetStand =  targetBed.transform.GetChild(0).transform.position;
-            targetSpotForAction = targetStand;
-            MoveToCoords(targetStand);
+            GoToSleep(targetRoom);
             
         }
         else if(currentScheduledEvent == "Food")
@@ -85,11 +84,40 @@ public class TestAI : MonoBehaviour
         {
             targetRoom = FindRoom("Bedroom1");
         }
+        else if(currentScheduledEvent == "WakeUp")
+        {
+            preparingForActionAtSpot = "WakeUp";
+        }
 
         if(roomTargeted == true && alternateBehavior == false)
         {
             MoveToCoords(targetRoom.GetComponent<RoomZoneLogic>().GetRandomPoint());
         }
+    }
+
+    void GoToSleep(GameObject targetRoom)
+    {
+        targetRoom = FindRoom("Bedroom1");
+        RoomZoneLogic roomLogic = targetRoom.GetComponent<RoomZoneLogic>();
+        GameObject targetBed = roomLogic.facilities.Find(obj => obj.name == "Bed01");
+        Vector3 targetStand =  targetBed.transform.GetChild(0).transform.position;
+        targetSpotForAction = targetStand;
+        Debug.Log(targetStand);
+        MoveToCoords(targetStand);
+        preparingForActionAtSpot = "GoToBed";
+    }
+
+    void PerformActionAtSpot(string actionToPerform)
+    {
+        if(actionToPerform == "GoToBed")
+        {
+            triggerAnimation.Invoke("GoToBed");
+        }
+        else if(actionToPerform == "WakeUp")
+        {
+            triggerAnimation.Invoke("WakeUp");
+        }
+        preparingForActionAtSpot = null;
     }
 
     GameObject FindRoom(string roomName)
@@ -108,12 +136,27 @@ public class TestAI : MonoBehaviour
     {
         //agent.destination = testDestination.position;
         agent.Move(testOffset);
+        if(agent.remainingDistance > 0.1f)
+        {
+            triggerAnimation.Invoke("Run");
+        }
+        else if(agent.remainingDistance <= 0.1f && preparingForActionAtSpot != null)
+        {
+            Debug.Log("");
+            PerformActionAtSpot(preparingForActionAtSpot);
+        }
+        else
+        {
+            triggerAnimation.Invoke("Idle");
+        }
 
         //Logic for actions that need to happen at a specific coordinate location
+        /*
         if(preparingForActionAtSpot && transform.position == targetSpotForAction)
         {
             Debug.Log($"Should perform action now");
         }
+        */
     }
 
     private void OnEnable()
@@ -122,6 +165,6 @@ public class TestAI : MonoBehaviour
     }
     private void OnDisable()
     {
-        
+        TimeClock.timePass -= EvaluateTime;
     }
 }
